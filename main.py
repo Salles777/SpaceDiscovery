@@ -1,10 +1,11 @@
 import pygame
 from tkinter import simpledialog
 import ast
+import math
 
 star_list = []
 
-def Salvar():
+def salvar():
     try:
         file = open("SalvarPontos.txt","w")
         for item in star_list:
@@ -15,6 +16,9 @@ def Salvar():
 
 pygame.init()
 white = (255, 255, 255)
+red = (255, 0, 0)
+green = (0, 128, 0)
+black = (0, 0, 0)
 size = (1000,516)
 clock = pygame.time.Clock()
 icon = pygame.image.load("space.png")
@@ -40,10 +44,10 @@ while running:
             star_list.append((item, pos))
 
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-            Salvar()
+            salvar()
 
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            Salvar()
+            salvar()
             running = False
 
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
@@ -79,8 +83,9 @@ while running:
     distance2 = ()
     for item, pos in star_list:
         star_name = font.render(item, True, white)
+
         scream.blit(star_name, (pos[0]+10, pos[1]+10))
-        pygame.draw.circle(scream, white, pos, 3)
+        pygame.draw.circle(scream, white, pos, 5)
         if first == True:
             point1 = pos
             first = False
@@ -88,15 +93,21 @@ while running:
             point2 = pos
             pygame.draw.line(scream, white, point1, point2, 1)
             point1= pos
-
-        if point1 == True:
+            
+        if second == True:
             distance1 = pos
-            point1 = False
+            second = False
         else:
             distance2 = pos
             distance = 0
+            distance = math.sqrt((distance2[0]-distance1[0])**2 + (distance2[1]-distance1[1])**2)
+            middle = ((distance1[0] + distance2[0]) // 2, (distance1[1] + distance2[1]) // 2)
+            distance_line = "({:.0f})".format(distance)[:5]
+            show_distance = font.render(str(distance_line), True, red)
+            scream.blit(show_distance, (middle))
+            distance1 = pos
 
     pygame.display.update()
     clock.tick(60)
-    
+
 pygame.quit
