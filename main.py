@@ -1,23 +1,19 @@
 import pygame
 from tkinter import simpledialog
-import json
+import ast
 
-star_list = {}
+star_list = []
 
-def inicializated():
+def Salvar():
     try:
-        arquivo = open("star_list.txt","r")
-        global star_list
-        star_list = json.loads(arquivo.read())
-        arquivo.close()
+        file = open("SalvarPontos.txt","w")
+        for item in star_list:
+            file.write("{0}\n".format(item))
+        file.close()
     except:
-        arquivo = open("star_list.txt","w")
-        arquivo.close()
-
-inicializated()
+        print("Erro ao salvar")
 
 pygame.init()
-black = (0, 0, 0)
 white = (255, 255, 255)
 size = (1000,516)
 clock = pygame.time.Clock()
@@ -29,7 +25,7 @@ pygame.display.set_caption("Space Marker")
 pygame.mixer.music.load("Space_Machine_Power.mp3")
 pygame.mixer.music.play(-1)
 running = True
-first = True
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -37,36 +33,70 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             item = simpledialog.askstring("Space", "Nome da Estrela: ")
-            print(item)
             if item == None or item == "":
                 item = "Desconhecido" + str(pos)
-            star_list[item] = pos
-            arquivo = open("star_list.txt","w")
-            arquivo.write(json.dumps(star_list))
-            arquivo.close()
-        #elif event.type == pygame.
-     
+            else:
+                item = item + str(pos)
+            star_list.append((item, pos))
+
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+            Salvar()
+
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            Salvar()
+            running = False
+
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+            try:
+                file = open("SalvarPontos.txt","r")
+                lines = file.readlines()
+                for item in lines:
+                    tupla = ast.literal_eval(item)
+                    star_list.append(tupla)
+            except:
+                print("Erro ao carregar os arquivos")
+
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+            file = open("SalvarPontos.txt","w")
+            star_list = []
+            file.close()
+            scream.blit(background,(0,0))
+
     scream.blit(background,(0,0))
     font = pygame.font.Font("freesansbold.ttf", 15)
-    text2 = font.render("Pressione F12 para Deletar os pontos", True, white)
-    scream.blit(text2, (20,30))
-    text3 = font.render("Após colocar o ponto o salvamento é automático", True, white)
-    scream.blit(text3, (20,50))
-    arquivo = open("star_list.txt", "r")
-    try:
-        star_list = json.loads(arquivo.read())
-    except:
-        star_list = {}
-    for nome, pos in star_list.items():
-        pygame.draw.circle(scream, white, pos, 7)
-        star_name = font.render(nome, True, white)
-        scream.blit(star_name,(pos[0]+10,pos[1]+10))
+    S = font.render("Pressione S para Salvar os Pontos", True , white)
+    scream.blit(S, (20,20))
+    C = font.render("Pressione C para Carregar os Pontos", True, white)
+    scream.blit(C, (20,40))
+    D = font.render("Pressione D para Deletar os Pontos", True, white)
+    scream.blit(D, (20,60))
+
+    first = True
+    point1 = ()
+    point2 = ()
+    second = True
+    distance1 = ()
+    distance2 = ()
+    for item, pos in star_list:
+        star_name = font.render(item, True, white)
+        scream.blit(star_name, (pos[0]+10, pos[1]+10))
+        pygame.draw.circle(scream, white, pos, 3)
         if first == True:
-            back = pos
+            point1 = pos
             first = False
         else:
-            pygame.draw.line(scream, white, back, pos, 2)
-            back = pos
+            point2 = pos
+            pygame.draw.line(scream, white, point1, point2, 1)
+            point1= pos
+
+        if point1 == True:
+            distance1 = pos
+            point1 = False
+        else:
+            distance2 = pos
+            distance = 0
 
     pygame.display.update()
     clock.tick(60)
+    
+pygame.quit
